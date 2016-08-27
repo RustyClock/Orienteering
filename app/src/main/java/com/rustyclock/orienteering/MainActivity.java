@@ -1,9 +1,17 @@
 package com.rustyclock.orienteering;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
@@ -14,6 +22,7 @@ import android.widget.EditText;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.logger.Logger;
 import com.rustyclock.orienteering.custom.ToolbarActivity;
 import com.rustyclock.orienteering.db.DbHelper;
 import com.rustyclock.orienteering.model.Checkpoint;
@@ -33,6 +42,7 @@ import java.sql.SQLException;
 public class MainActivity extends ToolbarActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int REQUEST_SEND_SMS = 34;
 
     Prefs_ prefs;
 
@@ -100,9 +110,65 @@ public class MainActivity extends ToolbarActivity {
     }
 
     @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
+
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.sending_sms)
+                        .setMessage(R.string.sending_sms_text)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{Manifest.permission.SEND_SMS}, REQUEST_SEND_SMS);
+                            }
+                        })
+                        .create()
+                        .show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.SEND_SMS}, REQUEST_SEND_SMS);
+            }
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         prefs = new Prefs_(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        Log.d("TAG", "onRequest");
+        switch (requestCode) {
+            case REQUEST_SEND_SMS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+
+                    Snackbar.make(findViewById(android.R.id.content), R.string.no_sms_permission, Snackbar.LENGTH_LONG)
+                            .setAction(R.string.settings, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent intent = new Intent();
+                                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    Uri uri = Uri.fromParts("package", MainActivity.this.getPackageName(), null);
+                                    intent.setData(uri);
+                                    startActivity(intent);
+                                }
+                            })
+                            .show();
+                }
+            }
+        }
     }
 
     @Override

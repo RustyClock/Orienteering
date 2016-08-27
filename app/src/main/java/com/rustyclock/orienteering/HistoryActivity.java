@@ -133,7 +133,7 @@ public class HistoryActivity extends ToolbarActivity {
 
             Checkpoint cp = getItem(position);
 
-            DrawableCompat.setTint(status.getDrawable(), cp.getStatusColor(getResources()));
+            DrawableCompat.setTint(status.getDrawable(), cp.getStatusColor(HistoryActivity.this));
 
             cp.displayChekpointData(tvChekpoint, tvChekpointCode);
             cp.displayDate(tvDate, tvHour);

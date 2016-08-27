@@ -22,6 +22,8 @@
 -keepclassmembers enum com.j256.** { *; }
 -keep interface com.j256.**
 -keepclassmembers interface com.j256.** { *; }
+-dontwarn javax.**
+-dontwarn org.slf4j.**
 
 #Android annotations
 -dontwarn org.androidannotations.**

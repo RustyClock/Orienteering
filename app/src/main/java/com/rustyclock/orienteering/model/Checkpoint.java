@@ -1,7 +1,9 @@
 package com.rustyclock.orienteering.model;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -98,7 +100,7 @@ public class Checkpoint implements Comparable<Checkpoint> {
         return status;
     }
 
-    public int getStatusColor(Resources res) {
+    public int getStatusColor(Context ctx) {
 
         int color = R.color.divider;
 
@@ -110,7 +112,7 @@ public class Checkpoint implements Comparable<Checkpoint> {
             case STATUS_FAILED: color = R.color.red; break;
         }
 
-        return res.getColor(color);
+        return ContextCompat.getColor(ctx, color);
     }
 
     public void setStatus(int status) {

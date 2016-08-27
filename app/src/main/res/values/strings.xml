@@ -32,4 +32,7 @@
     <string name="enter_code">Przepisz kod</string>
     <string name="send">Wyślij</string>
     <string name="cancel">Anuluj</string>
+    <string name="sending_sms">Wysyłka SMS</string>
+    <string name="sending_sms_text">Aplikacja wymaga zezwolenia na wysyłkę SMSów by wysyłać zeskanowane kody.</string>
+    <string name="no_sms_permission">Aplikacja nie będzie funcjonować bez uprawnienia do wysyłki SMSów</string>
 </resources>
